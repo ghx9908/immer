@@ -31,11 +31,6 @@ cnpm i --save immer
 
 ```js
 import { produce } from "immer"
-let baseState = {}
-
-let nextState = produce(baseState, (draft) => {})
-console.log(baseState === nextState)
-import { produce } from "immer"
 let baseState = {
   ids: [1],
   pos: {
@@ -49,4 +44,37 @@ let nextState = produce(baseState, (draft) => {
 })
 console.log(baseState.ids === nextState.ids) //false
 console.log(baseState.pos === nextState.pos) //true
+```
+
+## 5.useImmerState.js
+
+### 5.1 基本使用
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {useImmerState} from './immer'
+let id = 1;
+function Todos() {
+  const [todos, setTodos] = useImmerState({
+    list: []
+  })
+  const addTodo = () => setTodos((draft) => {
+    draft.list.push(id++)
+  })
+  return (
+    <>
+      <button onClick={addTodo}>增加</button>
+      <ul>
+        {
+          todos.list.map((item, index) => <li key={index}>{item}</li>)
+        }
+      </ul>
+    </>
+  )
+}
+ReactDOM.render(
+  <Todos />,
+  document.getElementById('root')
+);
 ```
