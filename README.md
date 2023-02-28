@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+## 1. 共享可变状态
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```js
+let objA = { name: "zhufeng" }
+let objB = objA
+objB.name = "jiagou"
+console.log(objA.name)
+```
 
-## Available Scripts
+## 2. 解决方案
 
-In the project directory, you can run:
+- 深度拷贝
 
-### `npm start`
+- [immutable-js](https://github.com/facebook/immutable-js)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 3.immer
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- [immer](https://github.com/immerjs/immer) 是 mobx 的作者写的一个 immutable 库
+- 核心实现是利用 ES6 的 proxy,几乎以最小的成本实现了 js 的不可变数据结构
 
-### `npm test`
+```js
+cnpm i --save immer
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 4.produce
 
-### `npm run build`
+- 对 draftState 的修改都会反应到 nextState 上
+- 而 Immer 使用的结构是共享的，nextState 在结构上又与 currentState 共享未修改的部分
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 4.1 基本使用
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```js
+import { produce } from "immer"
+let baseState = {}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+let nextState = produce(baseState, (draft) => {})
+console.log(baseState === nextState)
+import { produce } from "immer"
+let baseState = {
+  ids: [1],
+  pos: {
+    x: 1,
+    y: 1,
+  },
+}
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+let nextState = produce(baseState, (draft) => {
+  draft.ids.push(2)
+})
+console.log(baseState.ids === nextState.ids) //false
+console.log(baseState.pos === nextState.pos) //true
+```
